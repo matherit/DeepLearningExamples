@@ -18,7 +18,6 @@
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
 
-
 namespace rpn {
 namespace {
 

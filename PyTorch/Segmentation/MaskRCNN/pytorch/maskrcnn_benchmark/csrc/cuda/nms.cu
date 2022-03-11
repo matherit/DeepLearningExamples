@@ -1,9 +1,9 @@
 // Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
 #include <ATen/ATen.h>
 #include <ATen/cuda/CUDAContext.h>
-
 #include <ATen/ceil_div.h>
 #include <c10/cuda/CUDACachingAllocator.h>
+
 #include <THC/THCDeviceUtils.cuh>
 
 #include <vector>
@@ -81,14 +81,15 @@ at::Tensor nms_cuda(const at::Tensor boxes, float nms_overlap_thresh) {
 
   scalar_t* boxes_dev = boxes_sorted.data_ptr<scalar_t>();
 
-  at::globalContext().lazyInitCUDA(); // TODO replace with getTHCState
+  //THCState *state = at::globalContext().lazyInitCUDA(); // TODO replace with getTHCState
+  at::globalContext().lazyInitCUDA();
 
   unsigned long long* mask_dev = NULL;
   //THCudaCheck(THCudaMalloc(state, (void**) &mask_dev,
   //                      boxes_num * col_blocks * sizeof(unsigned long long)));
 
   mask_dev = (unsigned long long *) c10::cuda::CUDACachingAllocator::raw_alloc(
-    boxes_num * col_blocks * sizeof(unsigned long long));
+      boxes_num * col_blocks * sizeof(unsigned long long));
 
   dim3 blocks(at::ceil_div(boxes_num, threadsPerBlock),
               at::ceil_div(boxes_num, threadsPerBlock));
